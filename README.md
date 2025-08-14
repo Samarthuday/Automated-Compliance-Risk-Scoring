@@ -7,22 +7,27 @@ A comprehensive real-time financial transaction monitoring system with AI-powere
 ```
 Automated-Compliance-Risk-Scoring/
 ├── src/
-│   ├── simple_api_server.py      # Main API server (Flask)
+│   ├── api/
+│   │   └── simple_api_server.py      # Main API server (Flask)
+│   ├── dashboard/
+│   │   ├── real_time_dashboard.html  # Live monitoring dashboard
+│   │   └── serve_dashboard.py        # Dashboard HTTP server
+│   ├── utils/
+│   │   ├── simple_ingestion.py       # Transaction generator
+│   │   ├── start_system.py           # System startup script
+│   │   ├── test_ingestion.py         # Testing utility
+│   │   └── check_status.py           # Status checker
+│   ├── models/
+│   │   ├── best_model.pkl            # Trained XGBoost model
+│   │   └── model_metadata.pkl        # Model metadata
+│   ├── notebooks/
+│   │   ├── system.ipynb              # System analysis notebook
+│   │   └── Model.ipynb               # Model training notebook
 │   └── __init__.py
-├── real_time_dashboard.html      # Live monitoring dashboard
-├── serve_dashboard.py           # Dashboard HTTP server
-├── simple_ingestion.py          # Transaction generator
-├── start_system.py              # System startup script
-├── test_ingestion.py            # Testing utility
-├── check_status.py              # Status checker
-├── best_model.pkl               # Trained XGBoost model
-├── model_metadata.pkl           # Model metadata
-├── requirements.txt             # Python dependencies
-├── system.ipynb                 # System analysis notebook
-├── Model.ipynb                  # Model training notebook
-├── SAML-D.csv                   # Sample transaction data (950MB)
-├── .firebaserc                  # Firebase configuration
-└── venv/                        # Virtual environment
+├── requirements.txt                   # Python dependencies
+├── SAML-D.csv                        # Sample transaction data (950MB)
+├── .firebaserc                       # Firebase configuration
+└── venv/                             # Virtual environment
 ```
 
 ## 🎯 **System Components**
@@ -75,13 +80,13 @@ This will:
 ### **Option 2: Manual Startup**
 ```bash
 # 1. Start the API server
-python src/simple_api_server.py
+python src/api/simple_api_server.py
 
 # 2. In a new terminal, start the transaction generator
-python simple_ingestion.py
+python src/utils/simple_ingestion.py
 
 # 3. In a new terminal, start the dashboard server
-python serve_dashboard.py
+python src/dashboard/serve_dashboard.py
 ```
 
 ## 🌐 **Access Points**
@@ -149,10 +154,10 @@ python serve_dashboard.py
 ### **Testing Utilities**
 ```bash
 # Test the ingestion system
-python test_ingestion.py
+python src/utils/test_ingestion.py
 
 # Check system status
-python check_status.py
+python src/utils/check_status.py
 ```
 
 ### **Manual Testing**
@@ -188,9 +193,9 @@ curl -X POST http://localhost:5000/api/process_transaction \
 - `DASHBOARD_PORT` - Dashboard server port (default: 8080)
 
 ### **Customization Options**
-- **Transaction generation rates** in `simple_ingestion.py`
-- **Dashboard refresh intervals** in `real_time_dashboard.html`
-- **API timeout settings** in `src/simple_api_server.py`
+- **Transaction generation rates** in `src/utils/simple_ingestion.py`
+- **Dashboard refresh intervals** in `src/dashboard/real_time_dashboard.html`
+- **API timeout settings** in `src/api/simple_api_server.py`
 - **Visual themes** in dashboard CSS
 
 ## 🚨 **Troubleshooting**
@@ -227,8 +232,8 @@ python start_system.py
 
 ## 📚 **Documentation**
 
-- **System Architecture**: See `system.ipynb`
-- **Model Training**: See `Model.ipynb`
+- **System Architecture**: See `src/notebooks/system.ipynb`
+- **Model Training**: See `src/notebooks/Model.ipynb`
 - **API Documentation**: Available at runtime
 - **Code Comments**: Comprehensive inline documentation
 
