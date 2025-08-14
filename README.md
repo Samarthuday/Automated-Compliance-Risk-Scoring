@@ -11,7 +11,7 @@ Automated-Compliance-Risk-Scoring/
 │   │   └── simple_api_server.py      # Main API server (Flask)
 │   ├── dashboard/
 │   │   ├── real_time_dashboard.html  # Live monitoring dashboard
-│   │   └── serve_dashboard.py        # Dashboard HTTP server
+│   │   └── serve_dashboard.py        # Dashboard HTTP server (port 8082)
 │   ├── utils/
 │   │   ├── simple_ingestion.py       # Transaction generator
 │   │   ├── start_system.py           # System startup script
@@ -24,15 +24,14 @@ Automated-Compliance-Risk-Scoring/
 │   │   ├── system.ipynb              # System analysis notebook
 │   │   └── Model.ipynb               # Model training notebook
 │   └── __init__.py
+├── start_system.py                    # Launcher script (runs API, generator, dashboard)
 ├── requirements.txt                   # Python dependencies
-├── SAML-D.csv                        # Sample transaction data (950MB)
-├── .firebaserc                       # Firebase configuration
-└── venv/                             # Virtual environment
+└── venv/                              # Virtual environment
 ```
 
 ## 🎯 **System Components**
 
-### **1. API Server (`src/simple_api_server.py`)**
+### **1. API Server (`src/api/simple_api_server.py`)**
 - **Flask-based REST API** for transaction processing
 - **ML model integration** with XGBoost risk assessment
 - **Real-time monitoring** with statistics and alerts
@@ -58,7 +57,7 @@ Automated-Compliance-Risk-Scoring/
 - **Live counters** and trend analysis
 
 ### **4. Dashboard Server (`serve_dashboard.py`)**
-- **Local HTTP server** to serve the dashboard on port 8080
+- **Local HTTP server** to serve the dashboard on port 8082
 - **CORS handling** for API communication
 - **Automatic browser opening**
 - **Simple file serving** with proper headers
@@ -74,7 +73,7 @@ python start_system.py
 This will:
 - ✅ Start the API server on port 5000
 - ✅ Start the transaction generator
-- ✅ Start the dashboard server on port 8080
+- ✅ Start the dashboard server on port 8082
 - ✅ Open the dashboard in your browser
 
 ### **Option 2: Manual Startup**
@@ -91,7 +90,7 @@ python src/dashboard/serve_dashboard.py
 
 ## 🌐 **Access Points**
 
-- **Dashboard**: http://localhost:8080/real_time_dashboard.html
+- **Dashboard**: http://localhost:8082/real_time_dashboard.html
 - **API Server**: http://localhost:5000
 - **Health Check**: http://localhost:5000/api/health
 - **API Documentation**: Available at runtime
@@ -127,7 +126,7 @@ python src/dashboard/serve_dashboard.py
 
 ### **Transaction Processing**
 - `POST /api/process_transaction` - Process individual transactions
-- `POST /api/process_bulk` - Process multiple transactions
+- `POST /api/bulk_process` - Process multiple transactions
 
 ### **Monitoring & Analytics**
 - `GET /api/monitoring/stats` - Real-time statistics
@@ -190,7 +189,8 @@ curl -X POST http://localhost:5000/api/process_transaction \
 ### **Environment Variables**
 - `LOG_LEVEL` - Logging level (default: INFO)
 - `API_PORT` - API server port (default: 5000)
-- `DASHBOARD_PORT` - Dashboard server port (default: 8080)
+
+Note: The dashboard server runs on a fixed port 8082.
 
 ### **Customization Options**
 - **Transaction generation rates** in `src/utils/simple_ingestion.py`
@@ -219,7 +219,7 @@ curl -X POST http://localhost:5000/api/process_transaction \
 3. **Dashboard Not Loading**
    ```bash
    # Check if dashboard server is running
-   curl http://localhost:8080
+   curl http://localhost:8082
    # Verify CORS settings
    ```
 
@@ -251,3 +251,17 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
+
+## 🧮 Risk Thresholds and Actions
+
+The API converts model risk scores into levels using these thresholds:
+
+- MINIMAL: score < 0.20 → auto-approved
+- LOW: 0.20 ≤ score < 0.50 → auto-approved
+- MEDIUM: 0.50 ≤ score < 0.80 → review required
+- HIGH: score ≥ 0.80 → flagged and alert generated
+
+Additional flags applied during processing:
+- `large_amount` when amount > 100,000
+- `high_risk_score` when score > 0.80
+- `suspicious_pattern` when amount > 50,000 and score > 0.60

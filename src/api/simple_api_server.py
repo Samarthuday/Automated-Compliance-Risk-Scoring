@@ -58,12 +58,18 @@ def load_model():
     """Load the trained model and metadata"""
     global model, metadata
     try:
+        # Get the directory where this script is located
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        models_dir = os.path.join(script_dir, '..', 'models')
+        
         # Load model
-        with open("best_model.pkl", 'rb') as f:
+        model_path = os.path.join(models_dir, "best_model.pkl")
+        with open(model_path, 'rb') as f:
             model = pickle.load(f)
         
         # Load metadata
-        with open("model_metadata.pkl", 'rb') as f:
+        metadata_path = os.path.join(models_dir, "model_metadata.pkl")
+        with open(metadata_path, 'rb') as f:
             metadata = pickle.load(f)
             
         logger.info(f"Model loaded successfully: {metadata.get('model_name', 'Unknown')}")

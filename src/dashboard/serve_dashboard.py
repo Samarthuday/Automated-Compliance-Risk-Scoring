@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 
 # Configuration
-PORT = 8080
+PORT = 8082
 DASHBOARD_FILE = "real_time_dashboard.html"
 
 class CORSHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
@@ -31,24 +31,24 @@ def main():
     
     # Create server
     with socketserver.TCPServer(("", PORT), CORSHTTPRequestHandler) as httpd:
-        print(f"🚀 Dashboard server started at http://localhost:{PORT}")
-        print(f"📁 Serving files from: {os.getcwd()}")
-        print(f"🌐 Dashboard URL: http://localhost:{PORT}/{DASHBOARD_FILE}")
+        print(f"Dashboard server started at http://localhost:{PORT}")
+        print(f"Serving files from: {os.getcwd()}")
+        print(f"Dashboard URL: http://localhost:{PORT}/{DASHBOARD_FILE}")
         print("\n" + "="*50)
-        print("🎯 IMPORTANT: Make sure your API server is running on port 5000!")
-        print("💡 Run: python src/simple_api_server.py")
+        print("IMPORTANT: Make sure your API server is running on port 5000!")
+        print("Run: python src/api/simple_api_server.py")
         print("="*50 + "\n")
         
         # Open dashboard in browser
         dashboard_url = f"http://localhost:{PORT}/{DASHBOARD_FILE}"
-        print(f"🔗 Opening dashboard: {dashboard_url}")
+        print(f"Opening dashboard: {dashboard_url}")
         webbrowser.open(dashboard_url)
         
         try:
-            print("🔄 Server running... Press Ctrl+C to stop")
+            print("Server running... Press Ctrl+C to stop")
             httpd.serve_forever()
         except KeyboardInterrupt:
-            print("\n🛑 Server stopped")
+            print("\nServer stopped")
 
 if __name__ == "__main__":
     main()

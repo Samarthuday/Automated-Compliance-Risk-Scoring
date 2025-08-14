@@ -17,6 +17,7 @@ def start_api_server():
     print("🚀 Starting API Server...")
     
     try:
+        print(f"🚀 Starting API server with command: {sys.executable} src/api/simple_api_server.py")
         process = subprocess.Popen(
             [sys.executable, "src/api/simple_api_server.py"],
             stdout=subprocess.PIPE,
@@ -24,22 +25,37 @@ def start_api_server():
             text=True
         )
         
+        # Check if process started
+        if process.poll() is not None:
+            print("❌ API server process failed to start")
+            stdout, stderr = process.communicate()
+            print(f"STDOUT: {stdout}")
+            print(f"STDERR: {stderr}")
+            return None
+        
         # Wait for server to start
-        time.sleep(3)
+        print("⏳ Waiting for API server to start...")
+        time.sleep(8)
         
         # Check if server started successfully
-        try:
-            import requests
-            response = requests.get("http://localhost:5000/api/health", timeout=10)
-            if response.status_code == 200:
-                print("✅ API Server started successfully")
-                return process
-            else:
-                print(f"❌ API Server returned status {response.status_code}")
-                return None
-        except Exception as e:
-            print(f"❌ Failed to start API Server: {e}")
-            return None
+        max_retries = 5
+        for attempt in range(max_retries):
+            try:
+                import requests
+                response = requests.get("http://localhost:5000/api/health", timeout=10)
+                if response.status_code == 200:
+                    print("✅ API Server started successfully")
+                    return process
+                else:
+                    print(f"⚠️  API Server returned status {response.status_code}, retrying...")
+            except Exception as e:
+                print(f"⚠️  Attempt {attempt + 1}/{max_retries}: API server not ready yet ({e})")
+                if attempt < max_retries - 1:
+                    time.sleep(5)
+                    continue
+                else:
+                    print(f"❌ Failed to start API Server after {max_retries} attempts")
+                    return None
             
     except Exception as e:
         print(f"❌ Error starting API Server: {e}")
@@ -50,12 +66,21 @@ def start_transaction_generator():
     print("📡 Starting Transaction Generator...")
     
     try:
+        print(f"🚀 Starting transaction generator with command: {sys.executable} src/utils/simple_ingestion.py")
         process = subprocess.Popen(
             [sys.executable, "src/utils/simple_ingestion.py"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True
         )
+        
+        # Check if process started
+        if process.poll() is not None:
+            print("❌ Transaction generator process failed to start")
+            stdout, stderr = process.communicate()
+            print(f"STDOUT: {stdout}")
+            print(f"STDERR: {stderr}")
+            return None
         
         # Wait for generator to start
         time.sleep(2)
@@ -65,6 +90,9 @@ def start_transaction_generator():
             return process
         else:
             print("❌ Failed to start Transaction Generator")
+            stdout, stderr = process.communicate()
+            print(f"STDOUT: {stdout}")
+            print(f"STDERR: {stderr}")
             return None
             
     except Exception as e:
@@ -76,6 +104,7 @@ def start_dashboard_server():
     print("🌐 Starting Dashboard Server...")
     
     try:
+        print(f"🚀 Starting dashboard server with command: {sys.executable} src/dashboard/serve_dashboard.py")
         process = subprocess.Popen(
             [sys.executable, "src/dashboard/serve_dashboard.py"],
             stdout=subprocess.PIPE,
@@ -83,15 +112,26 @@ def start_dashboard_server():
             text=True
         )
         
+        # Check if process started
+        if process.poll() is not None:
+            print("❌ Dashboard server process failed to start")
+            stdout, stderr = process.communicate()
+            print(f"STDOUT: {stdout}")
+            print(f"STDERR: {stderr}")
+            return None
+        
         # Wait for server to start
-        time.sleep(2)
+        time.sleep(3)
         
         if process.poll() is None:
             print("✅ Dashboard Server started successfully")
-            print("🌐 Dashboard available at: http://localhost:8080/real_time_dashboard.html")
+            print("🌐 Dashboard available at: http://localhost:8082/real_time_dashboard.html")
             return process
         else:
             print("❌ Failed to start Dashboard Server")
+            stdout, stderr = process.communicate()
+            print(f"STDOUT: {stdout}")
+            print(f"STDERR: {stderr}")
             return None
             
     except Exception as e:
@@ -136,10 +176,10 @@ def main():
     
     # Check if required files exist
     required_files = [
-        "src/simple_api_server.py",
-        "simple_ingestion.py",
-        "serve_dashboard.py",
-        "real_time_dashboard.html"
+        "src/api/simple_api_server.py",
+        "src/utils/simple_ingestion.py",
+        "src/dashboard/serve_dashboard.py",
+        "src/dashboard/real_time_dashboard.html"
     ]
     
     for file_path in required_files:
@@ -175,7 +215,7 @@ def main():
         print("\n" + "=" * 60)
         print("🎉 REAL-TIME COMPLIANCE MONITORING SYSTEM IS RUNNING!")
         print("=" * 60)
-        print("📊 Dashboard: http://localhost:8080/real_time_dashboard.html")
+        print("📊 Dashboard: http://localhost:8082/real_time_dashboard.html")
         print("🔌 API Server: http://localhost:5000")
         print("📡 Transaction Generator: Running")
         print("\n💡 Press Ctrl+C to stop the system")

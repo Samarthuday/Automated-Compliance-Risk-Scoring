@@ -60,21 +60,21 @@ class SimpleTransactionGenerator:
             if response.status_code == 200:
                 result = response.json()
                 self.transaction_count += 1
-                print(f"✅ Transaction {self.transaction_count}: {transaction['transaction_id']} - Risk Score: {result['risk_score']:.3f} - Amount: ${transaction['amount']:,.2f}")
+                print(f"Transaction {self.transaction_count}: {transaction['transaction_id']} - Risk Score: {result['risk_score']:.3f} - Amount: ${transaction['amount']:,.2f}")
                 return True
             else:
-                print(f"❌ Transaction failed: {response.status_code}")
+                print(f"Transaction failed: {response.status_code}")
                 return False
                 
         except Exception as e:
-            print(f"❌ Error sending transaction: {e}")
+            print(f"Error sending transaction: {e}")
             return False
     
     def start_generation(self):
         """Start generating transactions continuously"""
-        print("🚀 Starting Simple Real-Time Transaction Generator...")
-        print(f"📡 API URL: {self.api_url}")
-        print("⏱️  Generating transactions every 2-5 seconds...")
+        print("Starting Simple Real-Time Transaction Generator...")
+        print(f"API URL: {self.api_url}")
+        print("Generating transactions every 2-5 seconds...")
         print("=" * 60)
         
         self.running = True
@@ -97,11 +97,11 @@ class SimpleTransactionGenerator:
                 print("\n🛑 Stopping transaction generator...")
                 break
             except Exception as e:
-                print(f"❌ Unexpected error: {e}")
+                print(f"Unexpected error: {e}")
                 time.sleep(5)
         
-        print(f"\n📊 Total transactions generated: {self.transaction_count}")
-        print("✅ Transaction generator stopped")
+        print(f"\nTotal transactions generated: {self.transaction_count}")
+        print("Transaction generator stopped")
     
     def stop_generation(self):
         """Stop generating transactions"""
@@ -110,19 +110,19 @@ class SimpleTransactionGenerator:
 def main():
     """Main function"""
     print("=" * 60)
-    print("🚀 SIMPLE REAL-TIME TRANSACTION GENERATOR")
+    print("SIMPLE REAL-TIME TRANSACTION GENERATOR")
     print("=" * 60)
     
     # Check if API is running
     try:
         response = requests.get("http://localhost:5000/api/health", timeout=5)
         if response.status_code == 200:
-            print("✅ API Server is running")
+            print("API Server is running")
         else:
-            print("❌ API Server is not responding properly")
+            print("API Server is not responding properly")
             return
     except Exception as e:
-        print(f"❌ Cannot connect to API server: {e}")
+        print(f"Cannot connect to API server: {e}")
         print("Make sure the API server is running on http://localhost:5000")
         return
     
